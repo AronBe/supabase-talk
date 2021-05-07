@@ -4,6 +4,7 @@ import React from 'react'
 import { ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { View, Text, Button, ListItem, Colors } from 'react-native-ui-lib'
+import { useAddWatering } from 'features/core/api/plantActions'
 import { useDeletePlant, useGetPlants } from 'features/core/api/plants'
 import PlantIcon from 'features/core/assets/PlantIcon'
 import { MainRoutes } from 'features/main/navigator/types'
@@ -12,6 +13,7 @@ const PlantList = () => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { navigate } = useNavigation()
 
+  const { mutate: waterPlant } = useAddWatering()
   const { data: plants, refetch, isFetching } = useGetPlants()
   const { mutate: deletePlant, isLoading } = useDeletePlant()
 
@@ -31,7 +33,9 @@ const PlantList = () => {
               backgroundColor={Colors.grey70}
               color={Colors.blue30}
               label="Water"
-              onPress={() => {}}
+              onPress={() => {
+                void waterPlant({ id: item.id })
+              }}
             />
           )}
           renderLeftActions={() =>
