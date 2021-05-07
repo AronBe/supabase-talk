@@ -4,30 +4,21 @@ import React from 'react'
 import { FlatList, RefreshControl } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { Button, Colors, ListItem, Text } from 'react-native-ui-lib'
+import { useGetPlants } from 'features/core/api/plants'
 import PlantIcon from 'features/core/assets/PlantIcon'
 import { MainRoutes } from 'features/main/navigator/types'
-
-const mockPlants = [
-  {
-    created_at: '2021-05-07T07:38:24.522607+00:00',
-    deleted_at: undefined,
-    id: 999,
-    last_watering: undefined,
-    name: 'Placeholder plant',
-    user_id: '5591b83a-9c81-4a07-aa62-ade2fb74b757',
-    watered_interval: 3,
-  },
-]
 
 const PlantList = () => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { navigate } = useNavigation()
 
+  const { data: plants, refetch, isFetching } = useGetPlants()
+
   return (
     <FlatList
-      data={mockPlants}
+      data={plants}
       refreshControl={
-        <RefreshControl onRefresh={() => {}} refreshing={false} />
+        <RefreshControl onRefresh={refetch} refreshing={isFetching} />
       }
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (

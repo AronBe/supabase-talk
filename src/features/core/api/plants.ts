@@ -1,10 +1,44 @@
-import { useMutation, useQueryClient } from 'react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from 'react-query'
 import { PlantsType, PostgrestError } from 'features/core/api/types'
 import { useToast } from 'features/core/hooks/useToast'
 import { useUser } from 'features/core/hooks/useUser'
 import { TABLES } from 'features/core/supabase/constants'
 import { supabase } from 'features/core/supabase/supabase'
 import { NewPlantType } from 'features/main/screens/NewPlant'
+
+export const useGetPlants = (
+  options?: UseQueryOptions<PlantsType[], PostgrestError>
+) => {
+  const { setToast } = useToast()
+
+  return useQuery<PlantsType[], PostgrestError>(
+    TABLES.PLANTS,
+    async () => {
+      const { data, error } = await supabase
+        .from<PlantsType>(TABLES.PLANTS)
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+      console.log(data)
+      return data ?? []
+    },
+    {
+      ...options,
+      onError: (error) => {
+        setToast({ message: error.message, visible: true })
+      },
+    }
+  )
+}
 
 export const useAddPlant = () => {
   const { user } = useUser()
