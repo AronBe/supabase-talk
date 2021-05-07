@@ -2,6 +2,7 @@ import LottieView from 'lottie-react-native'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Button, Text, View } from 'react-native-ui-lib'
+import { useAddPlant } from 'features/core/api/plants'
 import { PlantsType } from 'features/core/api/types'
 // eslint-disable-next-line import/extensions
 import newPlantAnimation from 'features/core/assets/newPlantAnimation.json'
@@ -19,8 +20,8 @@ const NewPlant: FC<MainNavigationProps<'NewPlant'>> = () => {
     defaultValues,
   })
   const [showLottie, setShowLottie] = useState(false)
+  const { mutate, isSuccess } = useAddPlant()
 
-  const isSuccess = false
   useEffect(() => {
     if (isSuccess) {
       formReset()
@@ -40,7 +41,7 @@ const NewPlant: FC<MainNavigationProps<'NewPlant'>> = () => {
   }, [showLottie])
 
   const handleAddPlant: SubmitHandler<NewPlantType> = (newPlant) =>
-    console.log(newPlant)
+    mutate(newPlant)
 
   return (
     <Screen>
