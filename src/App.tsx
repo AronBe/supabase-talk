@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ButtonProps, Colors, ThemeManager } from 'react-native-ui-lib'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ToastContextProvider } from 'features/core/hooks/useToast'
+import { UserContextProvider } from 'features/core/hooks/useUser'
 import Navigator from 'features/navigation/navigator'
 import 'react-native-gesture-handler'
 
@@ -21,10 +22,12 @@ const queryClient = new QueryClient({
 
 export const App = () => (
   <SafeAreaProvider>
-    <ToastContextProvider>
-      <QueryClientProvider client={queryClient}>
-        <Navigator />
-      </QueryClientProvider>
-    </ToastContextProvider>
+    <UserContextProvider>
+      <ToastContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <Navigator />
+        </QueryClientProvider>
+      </ToastContextProvider>
+    </UserContextProvider>
   </SafeAreaProvider>
 )

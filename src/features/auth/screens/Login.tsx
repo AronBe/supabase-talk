@@ -5,16 +5,23 @@ import { AuthNavigationProps, AuthRoutes } from 'features/auth/navigator/types'
 import { ILoginValues } from 'features/auth/screens/types'
 import AppTextInput from 'features/core/components/AppTextInput'
 import Screen from 'features/core/components/Screen'
+import { useToast } from 'features/core/hooks/useToast'
+import { supabase } from 'features/core/supabase/supabase'
 
 const Login: FC<AuthNavigationProps<'Login'>> = ({ navigation }) => {
   const { control, handleSubmit } = useForm()
+  const { setToast } = useToast()
 
   const showSignup = () => {
     navigation.navigate(AuthRoutes.SIGNUP)
   }
 
-  const login: SubmitHandler<ILoginValues> = ({ email, password }) => {
-    console.log(email, password)
+  const login: SubmitHandler<ILoginValues> = async ({ email, password }) => {
+    const { error } = await supabase.auth.signIn({ email, password })
+
+    if (error) {
+      return setToast({ message: error.message, visible: true })
+    }
   }
 
   return (

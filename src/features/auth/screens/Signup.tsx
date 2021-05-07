@@ -5,12 +5,19 @@ import { AuthNavigationProps } from 'features/auth/navigator/types'
 import { ISignupValues } from 'features/auth/screens/types'
 import AppTextInput from 'features/core/components/AppTextInput'
 import Screen from 'features/core/components/Screen'
+import { useToast } from 'features/core/hooks/useToast'
+import { supabase } from 'features/core/supabase/supabase'
 
 const Signup: FC<AuthNavigationProps<'Signup'>> = () => {
   const { control, handleSubmit } = useForm<ISignupValues>()
+  const { setToast } = useToast()
 
-  const signup: SubmitHandler<ISignupValues> = ({ email, password }) => {
-    console.log(email, password)
+  const signup: SubmitHandler<ISignupValues> = async ({ email, password }) => {
+    const { error } = await supabase.auth.signUp({ email, password })
+
+    if (error) {
+      setToast({ message: error.message, visible: true })
+    }
   }
 
   return (
