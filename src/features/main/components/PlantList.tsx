@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/native'
 import dayjs from 'dayjs'
 import React from 'react'
-import { FlatList, RefreshControl } from 'react-native'
+import { ActivityIndicator, FlatList, RefreshControl } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
-import { Button, Colors, ListItem, Text } from 'react-native-ui-lib'
-import { useGetPlants } from 'features/core/api/plants'
+import { View, Text, Button, ListItem, Colors } from 'react-native-ui-lib'
+import { useDeletePlant, useGetPlants } from 'features/core/api/plants'
 import PlantIcon from 'features/core/assets/PlantIcon'
 import { MainRoutes } from 'features/main/navigator/types'
 
@@ -13,6 +13,7 @@ const PlantList = () => {
   const { navigate } = useNavigation()
 
   const { data: plants, refetch, isFetching } = useGetPlants()
+  const { mutate: deletePlant, isLoading } = useDeletePlant()
 
   return (
     <FlatList
@@ -33,16 +34,22 @@ const PlantList = () => {
               onPress={() => {}}
             />
           )}
-          renderLeftActions={() => (
-            <Button
-              marginV-s1
-              marginL-20
-              backgroundColor={Colors.grey70}
-              color={Colors.red10}
-              onPress={() => {}}
-              label="Delete"
-            />
-          )}
+          renderLeftActions={() =>
+            isLoading ? (
+              <View center paddingH-20 marginH-s1>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <Button
+                marginV-s1
+                marginL-20
+                backgroundColor={Colors.grey70}
+                color={Colors.red10}
+                onPress={() => void deletePlant(item.id)}
+                label="Delete"
+              />
+            )
+          }
         >
           <ListItem
             onPress={() => navigate(MainRoutes.PLANT_DETAIL, { plant: item })}

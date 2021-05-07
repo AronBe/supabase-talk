@@ -72,3 +72,30 @@ export const useAddPlant = () => {
     }
   )
 }
+
+export const useDeletePlant = () => {
+  const { setToast } = useToast()
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    async (id: PlantsType['id']) => {
+      const { data, error } = await supabase
+        .from<PlantsType>(TABLES.PLANTS)
+        .update({ deleted_at: new Date().toISOString() })
+        .match({ id: id.toString() })
+        .single()
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      return data
+    },
+
+    {
+      onError: (error: PostgrestError) =>
+        setToast({ message: error.message, visible: true }),
+      onSuccess: () => void queryClient.invalidateQueries(TABLES.PLANTS),
+    }
+  )
+}
