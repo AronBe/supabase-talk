@@ -2,6 +2,7 @@ import React from 'react'
 import { FlatList, Platform } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
 import { Button, Text, View } from 'react-native-ui-lib'
+import { useGetStorage, useUploadToStorage } from 'features/core/api/storage'
 import { PlantsType } from 'features/core/api/types'
 import { STORAGE_BUCKETS } from 'features/core/supabase/constants'
 import GalleryImage from 'features/main/components/GalleryImage'
@@ -15,6 +16,9 @@ const IMAGE_PICKER_CONFIG = {
 } as const
 
 const PhotoGallery = ({ plantId }: { plantId: PlantsType['id'] }) => {
+  const { data } = useGetStorage(STORAGE_BUCKETS.PLANTS, plantId.toString())
+  const { mutate } = useUploadToStorage()
+
   const handleUpload = () => {
     launchImageLibrary(IMAGE_PICKER_CONFIG, (response) => {
       if (response?.uri) {
@@ -31,7 +35,12 @@ const PhotoGallery = ({ plantId }: { plantId: PlantsType['id'] }) => {
         }
 
         const filePath = `${plantId}/${name}`
-        console.log(file, filePath)
+        mutate({
+          filePath,
+          file,
+          plantId: plantId.toString(),
+          bucket: STORAGE_BUCKETS.PLANTS,
+        })
       }
     })
   }
@@ -43,10 +52,10 @@ const PhotoGallery = ({ plantId }: { plantId: PlantsType['id'] }) => {
         <Button link label="Add photo" onPress={handleUpload} />
       </View>
       <FlatList
-        data={[]}
+        data={data}
         contentContainerStyle={{ height: 100, margin: 20 }}
         horizontal
-        keyExtractor={(_item, index) => index.toString()}
+        keyExtractor={(item) => item?.id}
         ListEmptyComponent={() => (
           <Button link label="Add your first photo" onPress={handleUpload} />
         )}

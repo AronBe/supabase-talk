@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ActivityIndicator } from 'react-native'
 import { Colors, Image, View } from 'react-native-ui-lib'
+import { useSignedUrl } from 'features/core/api/storage'
 import { FileObject } from 'features/core/api/types'
 import { StorageBucketsType } from 'features/core/supabase/constants'
 
@@ -11,22 +12,21 @@ interface IProps {
 }
 
 const GalleryImage = ({ item, bucket, plantId }: IProps) => {
-  const [showLoader, setShowLoader] = useState(true)
   const filePath = `${plantId}/${item.name}`
-  console.log(filePath, bucket)
-  const dataPlaceholder = ''
+  const { data, isLoading } = useSignedUrl(bucket, filePath)
+  const [showLoader, setShowLoader] = useState(true)
 
   return (
     <View center>
-      {showLoader && (
+      {(isLoading || showLoader) && (
         <View absV absH>
           <ActivityIndicator color={Colors.green10} />
         </View>
       )}
-      {dataPlaceholder && (
+      {data && (
         <Image
           onLoadEnd={() => setShowLoader(false)}
-          source={{ uri: dataPlaceholder }}
+          source={{ uri: data }}
           height={100}
           width={100}
         />
