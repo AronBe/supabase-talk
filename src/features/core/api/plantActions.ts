@@ -94,6 +94,7 @@ export const useDeleteWatering = () => {
         setToast({ message: error.message, visible: true }),
       onSuccess: () => {
         void queryClient.invalidateQueries(TABLES.WATERING)
+        void queryClient.invalidateQueries(TABLES.PLANTS)
         setToast({ message: 'Record was deleted', visible: true })
       },
     }
